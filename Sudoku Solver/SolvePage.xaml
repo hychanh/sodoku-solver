@@ -1,0 +1,263 @@
+﻿<phone:PhoneApplicationPage
+    Style="{StaticResource RotateTransition}"
+    x:Class="Sudoku_Solver.SolvePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d"
+    xmlns:imagetools="clr-namespace:ImageTools.Controls;assembly=ImageTools.Controls"
+    shell:SystemTray.IsVisible="False">
+    <phone:PhoneApplicationPage.Resources>
+        <Style x:Key="Solve_Button_Style" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PhoneForegroundBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}"/>
+            <Setter Property="BorderThickness" Value="{StaticResource PhoneBorderThickness}"/>
+            <Setter Property="FontFamily" Value="{StaticResource PhoneFontFamilySemiBold}"/>
+            <Setter Property="FontSize" Value="{StaticResource PhoneFontSizeMedium}"/>
+            <Setter Property="Padding" Value="10,5,10,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver"/>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentContainer">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneButtonBasePressedForegroundBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="ButtonBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <ImageBrush Stretch="Fill" ImageSource="/Pics/Solve_Button_Hold.png"/>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentContainer">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ButtonBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PhoneDisabledBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="ButtonBackground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Transparent"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="ButtonBackground" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0" Margin="{StaticResource PhoneTouchTargetOverhang}">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="/Pics/Solve_Button.png" Stretch="Fill"/>
+                                </Border.Background>
+                                <ContentControl x:Name="ContentContainer" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </phone:PhoneApplicationPage.Resources>
+
+
+    <Grid x:Name="Main_Grid" HorizontalAlignment="Left" Height="850" VerticalAlignment="Top" Width="480" Margin="0">
+        <Grid.Background>
+            <ImageBrush Stretch="Uniform" ImageSource="/Pics/HalloweenWall2.png"/>
+        </Grid.Background>
+        <MediaElement x:Name="Background_Sound" HorizontalAlignment="Left" Height="35" Margin="425,655,0,0" VerticalAlignment="Top" Width="35" Source="/Sounds/Snow.mp3" Volume="2" MediaEnded="Snowdream_MediaEnded" />
+
+        <Grid x:Name="Cell_Grid" HorizontalAlignment="Left" Height="406" Margin="37,96,0,0" VerticalAlignment="Top" Width="406" RenderTransformOrigin="0.5,0.5">
+            <Grid.Background>
+                <ImageBrush ImageSource="/Pics/Sudoku Template2.png" Opacity="0.8"/>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Cell1_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell1_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="0" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell2_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="1" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell3_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="2" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell4_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="3" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell5_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="4" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell6_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="5" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell7_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="6" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell8_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="7" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_1" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_2" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_3" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_4" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_5" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_6" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_7" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_8" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+            <Button x:Name="Cell9_9" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="Cell_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Row="8" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" />
+
+        </Grid>
+        <Button x:Name="Clean_Button" Content="" HorizontalAlignment="Left" Height="100" Margin="240,0,0,120" VerticalAlignment="Bottom" Width="100" Click="Clean_Button_Click" BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="0" Style="{StaticResource Clean_Button_Style}">
+            <Button.Background>
+                <ImageBrush Stretch="Fill" ImageSource="/Pics/Clean_Button.png"/>
+            </Button.Background>
+        </Button>
+        <imagetools:AnimatedImage x:Name="Processing" Source="{Binding Path=ImageSource, Converter={StaticResource ImageConverter}}" Foreground="{x:Null}" Width="100" Height="100" Margin="190,350" />
+        <Button x:Name="Solve_Button" Content="T" HorizontalAlignment="Left" Margin="140,0,0,120" VerticalAlignment="Bottom" BorderBrush="{x:Null}" Foreground="#FF07A000" BorderThickness="0" Width="100" Height="100" Padding="0" FontSize="20" FontWeight="Bold" RenderTransformOrigin="-2.53,0.62" Style="{StaticResource Solve_Button_Style}" Click="Solve_clicked">
+            <Button.Background>
+                <ImageBrush Stretch="Fill" ImageSource="/Pics/Solve_Button.png"/>
+            </Button.Background>
+        </Button>
+        <Grid x:Name="NumBar" HorizontalAlignment="Left" Height="120" Margin="0,517,0,0" VerticalAlignment="Top" Width="480">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity="0.595"/>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="NumBut_Grid" HorizontalAlignment="Left" Height="45" Margin="14,5,0,0" VerticalAlignment="Top" Width="452" Grid.Row="1">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0" Opacity="0.6">
+                        <GradientStop Color="#FF005D00" Offset="0.987"/>
+                        <GradientStop Color="#FF00F900"/>
+                        <GradientStop Color="#FF008100" Offset="0.433"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="Num0_Button" Content="0" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="0" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" Background="#FF003AFF" />
+                <Button x:Name="Num1_Button" Content="1" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="1" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num2_Button" Content="2" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="2" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num3_Button" Content="3" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="3" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num4_Button" Content="4" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="4" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num5_Button" Content="5" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="5" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num6_Button" Content="6" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="6" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num7_Button" Content="7" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="7" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num8_Button" Content="8" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="8" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+                <Button x:Name="Num9_Button" Content="9" HorizontalAlignment="Center" VerticalAlignment="Center"  FontSize="30" Click="NumBut_click" Foreground="White"  Background="{x:Null}"  BorderThickness="0" Padding="0"  Width="68" Height="68" Grid.Column="9" Margin="-1,-1,0,0" BorderBrush="{x:Null}" Style="{StaticResource WtoB_Style}" FontWeight="Bold" />
+
+            </Grid>
+            <TextBlock x:Name="Text1" HorizontalAlignment="Left" Margin="0,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="33.333" Text="Chose a number to insert" Foreground="White" FontWeight="Bold" Width="480" Height="45" TextAlignment="Center"/>
+
+        </Grid>
+        <Grid x:Name="Status_Grid" HorizontalAlignment="Left" Height="60" Margin="37,20,0,0" VerticalAlignment="Top" Width="406" RenderTransformOrigin="-1.05,-0.1">
+            <Grid.Background>
+                <SolidColorBrush Color="#FF616161" Opacity="0.6"/>
+            </Grid.Background>
+            <TextBlock x:Name="Status_Text" HorizontalAlignment="Left" Margin="6,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" Height="50" FontSize="40" Text="Insert a number" Foreground="White" TextAlignment="Center"/>
+        </Grid>
+
+    </Grid>
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" Opacity="0.4">
+            <shell:ApplicationBarIconButton x:Name="Reset_Button" IconUri="/Assets/AppBar/refresh.png" Text="Reset" Click="Reset_Button_Click" />
+            <shell:ApplicationBarIconButton x:Name="Back_Button" IconUri="/Assets/AppBar/back.png" Text="back" Click="Back_Button_Click" />
+
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+    <!--LayoutRoot is the root grid where all page content is placed-->
+</phone:PhoneApplicationPage>
